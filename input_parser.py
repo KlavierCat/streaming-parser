@@ -91,10 +91,22 @@ class InputParser():
             video_number, endpoint_number, latency = raw_input().split(" ")
             self.requests.append(Request(latency, self.videos[int(video_number)], self.endpoints[int(endpoint_number)]))
 
+        # print(self.videos, self.endpoints, self.requests)
+
+		# for v in self.videos:
+		#     print("Video: {}".format(v))
+
+		# print("Cache size: {}".format(self.size_caches))
+
         solver = GreedySolver.GreedySolver(self.endpoints, self.requests, self.caches)
 
         # greed on the number of times a video is requested
         assigned_caches = solver.solve(lambda r: -r.amount)
+
+        # print("-- Solution -- ")
+		# for k, ac in sorted(assigned_caches.items(), key=lambda t: int(t[0])):
+		#     print("cache {: 3d} : videos {}".format(int(k), sorted(ac.get_videos())))
+		# print("--")
 
         total_savings = 0
         total_requests = 0
@@ -108,8 +120,6 @@ class InputParser():
             total_requests += r.amount
 
         print("SCORE: {}".format(total_savings * 1000 / total_requests))
-
-        #print(self.videos, self.endpoints, self.requests)
 
 def main():
     parser = InputParser()
