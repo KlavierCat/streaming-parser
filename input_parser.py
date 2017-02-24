@@ -103,11 +103,7 @@ print("Cache size: {}".format(size_caches))
 solver = GreedySolver.GreedySolver(endpoints, requests, caches)
 
 # greed on the number of times a video is requested
-# assigned_caches = solver.solve(lambda r: -r.amount)
-
-# greedy on the "total value" of the request = vid_size x amount
-assigned_caches = solver.solve(lambda r: -r.amount * r.size())
-
+assigned_caches = solver.solve(lambda r: -r.amount)
 print("-- Solution -- ")
 for k, ac in sorted(assigned_caches.items(), key=lambda t: int(t[0])):
     print("cache {: 3d} : videos {}".format(int(k), sorted(ac.get_videos())))
