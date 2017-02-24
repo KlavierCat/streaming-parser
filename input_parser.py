@@ -17,7 +17,7 @@ class Video:
 class Endpoint:
     def __init__(self, number, datacenter_latency):
         self.number = number
-        self.datacenter_latency = datacenter_latency
+        self.datacenter_latency = int(datacenter_latency)
         self.caches = []
 
     def __str__(self):
@@ -30,7 +30,7 @@ class Endpoint:
 class CacheConnection:
     def __init__(self, cache_number, latency, capacity):
         self.cache_number = cache_number
-        self.latency = latency
+        self.latency = int(latency)
         self.capacity = int(capacity)
         self.videos = []
 
@@ -53,7 +53,7 @@ class Request:
         self.from_endpoint = from_endpoint
 
     def __str__(self):
-        return "endpoint:{} - vid {} - times: {} - value: {}".format(self.from_endpoint, self.to_video, self.amount, self.amount * self.size())
+        return "endpoint:{} - vid {} - times: {}".format(self.from_endpoint, self.to_video, self.amount)
 
     def endpoint(self):
         return self.from_endpoint
@@ -95,16 +95,29 @@ for i in range(int(n_requests)):
     requests.append(Request(latency, videos[int(video_number)], endpoints[int(endpoint_number)]))
 
 # print(videos, endpoints, requests)
-for v in videos:
-    print("Video: {}".format(v))
-
-print("Cache size: {}".format(size_caches))
+# for v in videos:
+#     print("Video: {}".format(v))
+#
+# print("Cache size: {}".format(size_caches))
 
 solver = GreedySolver.GreedySolver(endpoints, requests, caches)
 
 # greed on the number of times a video is requested
 assigned_caches = solver.solve(lambda r: -r.amount)
-print("-- Solution -- ")
-for k, ac in sorted(assigned_caches.items(), key=lambda t: int(t[0])):
-    print("cache {: 3d} : videos {}".format(int(k), sorted(ac.get_videos())))
-print("--")
+# print("-- Solution -- ")
+# for k, ac in sorted(assigned_caches.items(), key=lambda t: int(t[0])):
+#     print("cache {: 3d} : videos {}".format(int(k), sorted(ac.get_videos())))
+# print("--")
+
+total_savings = 0
+total_requests = 0
+
+for r in requests:
+    latency_used = min([ac.latency for ac in assigned_caches.values() if r.to_video.number in ac.videos] + [r.from_endpoint.datacenter_latency ])
+    gain = r.from_endpoint.datacenter_latency - latency_used
+    # print("req {} - DC Lat {} - Used Lat {} - gain {} * {}".format(r, r.from_endpoint.datacenter_latency, latency_used, gain, r.amount))
+
+    total_savings += gain * r.amount
+    total_requests += r.amount
+
+print("SCORE: {}".format(total_savings * 1000 / total_requests))

@@ -20,7 +20,7 @@ class GreedySolver:
                     break
 
                 cap = self.caches[c.cache_number].capacity
-                # print(cap, req.size(), req.to_video.number)
+                # print(c.cache_number, cap, req.size())
                 if cap - req.size() >= 0:
                     self.caches[c.cache_number].add_video(req.to_video.number)
                     self.caches[c.cache_number].capacity = cap - req.size()
